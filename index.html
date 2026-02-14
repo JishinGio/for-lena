@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>михвхвхвххвххв ❤️</title>
+<style>
+    body {
+        margin: 0; font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(135deg, #ff4e8b, #ff9ecf);
+        color: white; text-align: center; overflow: hidden;
+        height: 100vh; display: flex; align-items: center; justify-content: center;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Экраны */
+    .screen {
+        position: fixed; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #ff4e8b, #ff9ecf);
+        z-index: 100; transition: all 0.6s ease;
+    }
+
+    .box {
+        background: rgba(255, 255, 255, 0.25); padding: 40px; border-radius: 20px;
+        backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.3);
+        display: flex; flex-direction: column; align-items: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    input {
+        padding: 15px; font-size: 22px; border-radius: 15px; border: 2px solid white;
+        margin-top: 20px; text-align: center; width: 200px; color: #ff4e8b; font-weight: bold;
+    }
+
+    .btn {
+        margin-top: 20px; padding: 12px 40px; background: white; color: #ff4e8b;
+        border: none; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 20px;
+    }
+
+    /* Пасхалки */
+    .easter-egg { position: absolute; cursor: pointer; animation: pulse 1.5s infinite; z-index: 110; }
+    .egg-right { bottom: 30px; right: 30px; }
+    .egg-left { bottom: 30px; left: 30px; }
+    .egg-label { font-size: 14px; font-weight: bold; margin-top: 5px; }
+
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+    /* Модальные окна */
+    .modal {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+        z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+    }
+    .modal-content {
+        background: #fff; color: #333; padding: 30px; border-radius: 25px;
+        max-width: 450px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: left;
+    }
+    .close-btn { position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 35px; color: #ff4e8b; font-weight: bold; }
+    .photo-full { width: 100%; border-radius: 15px; border: 3px solid #ff4e8b; margin-top: 10px; }
+
+    /* Основной контент */
+    #mainContent { display: none; opacity: 0; transition: 1s; width: 100%; z-index: 10; }
+    .container { 
+        display: inline-block; padding: 45px; background: rgba(255, 255, 255, 0.2); 
+        backdrop-filter: blur(15px); border-radius: 35px; border: 2px solid rgba(255, 255, 255, 0.5); 
+        min-width: 480px; position: relative; 
+    }
+
+    .buttons-wrapper { margin-top: 50px; display: flex; justify-content: center; align-items: center; gap: 40px; height: 160px; position: relative; }
+    button.choice { padding: 18px 35px; font-size: 22px; border: none; border-radius: 60px; cursor: pointer; font-weight: bold; }
+    #yes { background-color: white; color: #ff4e8b; }
+    #no { background-color: #ff2e63; color: white; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; }
+
+    /* Частицы конфетти */
+    .particle { position: absolute; pointer-events: none; z-index: 1000; will-change: transform, opacity; backface-visibility: hidden; }
+    .photo-particle { width: 120px; height: 120px; object-fit: cover; border-radius: 15px; border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.2); image-rendering: -webkit-optimize-contrast; }
+    .text-particle { font-weight: 900; white-space: nowrap; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+
+    @keyframes fly {
+        0% { transform: translateY(110vh) rotate(0deg) scale(0.6); opacity: 0; }
+        15% { opacity: 1; }
+        85% { opacity: 1; }
+        100% { transform: translateY(-25vh) rotate(360deg) scale(1.1); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<audio id="mySong" src="music.mp3"></audio>
+
+<div id="loginScreen" class="screen">
+    <div class="box">
+        <h1>Секретный код ❤️</h1>
+        <input type="text" id="dateInput" placeholder="ДД.ММ.ГГГГ" maxlength="10">
+        <button class="btn" onclick="checkDate()">Войти</button>
+    </div>
+</div>
+
+<div id="timerScreen" class="screen" style="display: none; opacity: 0;">
+    <div class="box">
+        <h1>Все верно! ❤️</h1>
+        <p style="font-size: 1.6rem;">Представляешь, мы вместе уже</p>
+        <b id="daysCount" style="font-size: 60px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">0</b>
+        <p id="daysText" style="font-size: 1.6rem;">дней</p>
+        <button class="btn" onclick="showMain()">Дальше ✨</button>
+    </div>
+    
+    <div class="easter-egg egg-right" onclick="openModal('letterModal')">
+        <span style="font-size: 40px;">❤️</span>
+        <div class="egg-label">кликни меня</div>
+    </div>
+
+    <div class="easter-egg egg-left" onclick="openModal('photoModal')">
+        <span style="font-size: 40px;">🐱</span>
+        <div class="egg-label">кликни меня мяуууу</div>
+    </div>
+</div>
+
+<div id="letterModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('letterModal')">&times;</span>
+        <h3 style="color: #ff4e8b; margin-top: 0; font-size: 24px;">Моя дорогая Лена...</h3>
+        <p style="font-size: 18px; line-height: 1.6;">
+            Знаешь, когда мы начали встречаться 07.10.2020, я даже не представлял, 
+            что ты станешь моим целым миром. Каждый день был для меня особенным, потому что в нем была ты. <br><br>
+            Ты — моя патара ката, мой самый близкий человек. Спасибо за твое терпение и любовь. 
+            Я люблю тебя бесконечно! ❤️
+        </p>
+    </div>
+</div>
+
+<div id="photoModal" class="modal">
+    <div class="modal-content" style="text-align: center;">
+        <span class="close-btn" onclick="closeModal('photoModal')">&times;</span>
+        <h3 style="color: #ff4e8b; margin-top: 0; font-size: 22px;">Мяу! Это тебе ✨</h3>
+        <img src="11.jpg" alt="Secret Photo" class="photo-full">
+    </div>
+</div>
+
+<div id="mainContent">
+    <div class="container" id="mainCard">
+        <h1 style="font-size: 3.2rem; margin-bottom: 10px;">Финальный вопрос 💖</h1>
+        <h2 style="font-size: 1.8rem; margin-bottom: 30px;">Ты будешь моей валентинкой?</h2>
+        <div class="buttons-wrapper">
+            <button id="yes" class="choice" onclick="celebrate()">Да! 💋</button>
+            <button id="no" class="choice">Нет 😠</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ЛОГИКА МАСКИ ДАТЫ
+const dateInput = document.getElementById('dateInput');
+dateInput.addEventListener('input', function (e) {
+    let input = e.target.value.replace(/\D/g, '');
+    let val = "";
+    if (input.length > 0) {
+        val += input.substring(0, 2);
+        if (input.length > 2) val += "." + input.substring(2, 4);
+        if (input.length > 4) val += "." + input.substring(4, 8);
+    }
+    e.target.value = val;
+});
+
+// ПРОВЕРКА ДАТЫ
+function checkDate() {
+    if (document.getElementById('dateInput').value === "07.10.2020") {
+        const start = new Date(2020, 9, 7);
+        const days = Math.floor((new Date() - start) / (1000 * 60 * 60 * 24));
+        document.getElementById('daysCount').innerText = days;
+        
+        let text = "дней";
+        if (days % 10 === 1 && days % 100 !== 11) text = "день";
+        else if ([2,3,4].includes(days % 10) && ![12,13,14].includes(days % 100)) text = "дня";
+        document.getElementById('daysText').innerText = text;
+
+        transition('loginScreen', 'timerScreen');
+    } else { alert("Не-а! Попробуй еще раз ❤️"); }
+}
+
+function showMain() { transition('timerScreen', 'mainContent'); }
+
+function transition(from, to) {
+    document.getElementById(from).style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById(from).style.display = 'none';
+        document.getElementById(to).style.display = (to === 'mainContent' ? 'block' : 'flex');
+        setTimeout(() => { document.getElementById(to).style.opacity = '1'; }, 50);
+    }, 600);
+}
+
+// МОДАЛКИ
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+// КНОПКА "НЕТ"
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+let noScale = 1, yesScale = 1, isFirstMove = true;
+
+noBtn.addEventListener("mouseover", () => {
+    if (isFirstMove) { noBtn.style.position = "absolute"; isFirstMove = false; }
+    const range = 140;
+    const randomX = (Math.random() - 0.5) * range * 2;
+    const randomY = (Math.random() - 0.5) * range * 2;
+    noBtn.style.left = `calc(50% + ${randomX + 90}px)`;
+    noBtn.style.top = `calc(50% + ${randomY}px)`;
+    noScale -= 0.08; if (noScale < 0.35) noScale = 0.35;
+    yesScale += 0.15;
+    noBtn.style.transform = `translate(-50%, -50%) scale(${noScale})`;
+    yesBtn.style.transform = `scale(${yesScale})`;
+});
+
+// ФИНАЛЬНЫЙ ПРАЗДНИК
+function createParticle(type) {
+    const el = document.createElement(type === 'photo' ? 'img' : 'div');
+    el.className = 'particle';
+    el.style.animation = `fly ${Math.random() * 2 + 2.5}s linear forwards`;
+    
+    if (type === 'photo') {
+        el.src = `${Math.floor(Math.random() * 10) + 1}.jpg`;
+        el.classList.add('photo-particle');
+    } else if (type === 'text') {
+        const texts = ["Люблю тебя", "Чеми гого", "i love you", "Патара ката", "Михвхвхвхвх"];
+        el.innerText = texts[Math.floor(Math.random() * texts.length)];
+        el.classList.add('text-particle');
+        el.style.fontSize = Math.random() * 25 + 25 + "px";
+        el.style.color = "#ffffff";
+    } else {
+        el.innerText = ["❤️", "💖", "🐱", "🥂", "💋", "✨"][Math.floor(Math.random()*6)];
+        el.style.fontSize = "40px";
+    }
+
+    el.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+}
+
+function celebrate() {
+    // ЗАПУСК МУЗЫКИ
+    const audio = document.getElementById("mySong");
+    audio.play().catch(e => console.log("Музыка ждет клика"));
+
+    noBtn.style.display = "none";
+    document.getElementById('mainCard').innerHTML = `
+        <h1 style='font-size:4rem; margin-bottom:20px;'>ХЕХЕХЕ ❤️</h1>
+        <p style='font-size:2.2rem;'>Ленусик, я тебя обожаю!</p>
+        <p style='font-size:1.6rem;'>С 14 февраля! 🥂</p>
+    `;
+    
+    setInterval(() => createParticle('emoji'), 120);
+    setInterval(() => createParticle('text'), 350);
+    setInterval(() => createParticle('photo'), 600);
+}
+</script>
+</body>
+</html>
